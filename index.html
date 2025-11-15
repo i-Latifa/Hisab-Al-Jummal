@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شاشة حساب الجمل</title>
+    <style>
+        /* إضافة الخطوط المخصصة */
+        @font-face {
+            font-family: "GaliModern";
+            src: url("GaliModern-Regular.otf") format("opentype");
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: "GaliModern";
+            src: url("GaliModern-Medium.otf") format("opentype");
+            font-weight: 500;
+            font-style: normal;
+        }
+
+        /* إعادة تعيين أساسي */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* الجسم والخلفية */
+        body {
+            display: flex; 
+            justify-content: center;
+            background: url('background.jpg') no-repeat top center;
+            background-size: cover;
+            font-family: 'GaliModern', sans-serif;
+            min-height: 100vh;
+            overflow-y: auto;
+            margin: 0;
+        }
+
+        /* الحاوية الرئيسية - حجم التابلت */
+        .container-wrapper {
+            width: 800px;        /* عرض Tab A9 */
+            min-height: 1340px;  /* ارتفاع Tab A9 */
+            display: flex; flex-direction: column;
+            justify-content: flex-start; align-items: center;
+            margin: 20px 0; position: relative;
+        }
+
+        /* المنطقة الرئيسية لإدخال كلمة السر */
+        .input-area {
+            text-align: center; 
+            background: transparent; 
+            z-index: 3;
+            margin-top: 350px;
+        }
+
+        .input-area input {
+            width: 70%; max-width: 300px;
+            padding: 10px 15px; 
+            border: none;
+            border-bottom: 4px solid #5E463B;
+            font-size: 2em; 
+            margin-bottom: 45px; /* المسافة بين الحقل والزر */
+            text-align: center; 
+            background: transparent;
+            color: #5E463B; 
+            outline: none; 
+            font-weight: 500;
+            font-family: 'GaliModern', sans-serif;
+        }
+
+        .input-area button {
+            background-color: #cc5243; 
+            color: white;
+            padding: 15px 50px; 
+            border: none; 
+            border-radius: 40px;
+            font-size: 2.3em; 
+            font-weight: 600; 
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            min-width: 200px;
+            font-family: 'GaliModern', sans-serif;
+        }
+
+.input-area button .btn-text {
+    display: inline-block;
+    position: relative;
+    top: -8px; /* عدلي الرقم حسب ما تحبين رفع الكلمة */
+}
+
+        .input-area button:hover { 
+            background-color: #b34538; 
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); 
+        }
+        .input-area button:active { 
+            background-color: #993a2f; 
+            transform: translateY(0); 
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); 
+        }
+
+        /* النوافذ المنبثقة */
+        .modal { 
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.8); 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 1000; 
+        }
+        .modal-content { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 15px; 
+            text-align: center; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
+            max-width: 350px; 
+            width: 90%; 
+            font-family: 'GaliModern', sans-serif;
+    color: #5E463B;
+        }
+        .success .modal-content { 
+            background: #5E463B; 
+            color: white; 
+            border: 3px solid #5E463B; 
+        }
+        .error .modal-content { 
+            background: #5E463B; 
+            color: white; 
+            border: 3px solid #5E463B; 
+        }
+        .modal-content h3 { font-size: 28px; margin-bottom: 15px; }
+        .modal-content p { font-size: 30px; margin-top: 10px; }
+
+        .decorative-element { display: none; }
+        .separator-line { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container-wrapper">
+        <div class="input-area">
+            <input type="text" id="passwordInput" placeholder="" aria-label="حقل كلمة السر">
+            <br>
+<button onclick="checkPassword()"><span class="btn-text">تحقق</span></button>
+        </div>
+    </div>
+
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <h3>أحسنت ! 🎉</h3>
+            <p> رمز الخزنة لتحصل على مكافأتك: <strong>1846</strong></p>
+        </div>
+    </div>
+
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            <h3>كلمة غير صحيحة ❌</h3>
+            <p>حاول مجددًا</p>
+        </div>
+    </div>
+
+    <script>
+        function checkPassword() {
+            const passwordInput = document.getElementById('passwordInput');
+            const successModal = document.getElementById('successModal');
+            const errorModal = document.getElementById('errorModal');
+            const correctPassword = "غموض";
+            
+            if (passwordInput.value === correctPassword) {
+                successModal.style.display = 'flex';
+                setTimeout(() => { successModal.style.display = 'none'; passwordInput.value = ''; }, 10000); 
+            } else {
+                errorModal.style.display = 'flex';
+                setTimeout(() => { errorModal.style.display = 'none'; passwordInput.value = ''; }, 2000);
+            }
+        }
+
+        window.onclick = function(event) {
+            const successModal = document.getElementById('successModal');
+            const errorModal = document.getElementById('errorModal');
+            if (event.target === successModal) successModal.style.display = 'none';
+            if (event.target === errorModal) errorModal.style.display = 'none';
+        }
+
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkPassword();
+        });
+    </script>
+</body>
+</html>
